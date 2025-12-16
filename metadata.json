@@ -1,0 +1,7 @@
+{
+  "name": "Arunava Saha Portfolio",
+  "description": "A luxury 3D portfolio website for AI Developer Arunava Saha, featuring metallic aesthetics, particle effects, and an integrated Gemini AI assistant.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

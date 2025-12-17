@@ -237,34 +237,41 @@ const ChatWidget: React.FC = () => {
     const aiMessageId = (Date.now() + 1).toString();
 
     try {
-      // Add artificial delay for better UX and WebView stability
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Add artificial delay for better UX and WebView stability (300ms as requested)
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ message: text }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch response");
+        const errorText = await response.text();
+        console.error(`Backend Error (${response.status}):`, errorText);
+        throw new Error(`Server responded with ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
-      const reply = data.reply || "I'm having a bit of trouble connecting right now. Please try again.";
+
+      if (!data.reply) {
+        throw new Error('Invalid response format: Missing reply field');
+      }
 
       setMessages(prev => [...prev, {
         id: aiMessageId,
         role: 'model',
-        text: reply,
+        text: data.reply,
         timestamp: Date.now()
       }]);
 
       setIsTyping(false);
-      speak(reply);
+      speak(data.reply);
 
     } catch (error) {
-      console.error("Chat Error:", error);
+      console.error("Chat Request Failed:", error);
       setMessages(prev => [...prev, {
         id: aiMessageId,
         role: 'model',
@@ -299,8 +306,8 @@ const ChatWidget: React.FC = () => {
       {/* Chat Window */}
       <div
         className={`transition-all duration-300 ease-out transform origin-bottom-right ${isOpen
-          ? 'w-[90vw] md:w-[400px] h-[600px] opacity-100 scale-100'
-          : 'w-0 h-0 opacity-0 scale-0 overflow-hidden'
+            ? 'w-[90vw] md:w-[400px] h-[600px] opacity-100 scale-100'
+            : 'w-0 h-0 opacity-0 scale-0 overflow-hidden'
           } bg-white/95 dark:bg-navy-900/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl flex flex-col mb-4`}
       >
         {/* Header */}
@@ -359,8 +366,8 @@ const ChatWidget: React.FC = () => {
           {messages.map((msg) => (
             <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
               <div className={`max-w-[85%] rounded-2xl p-3.5 text-sm shadow-md ${msg.role === 'user'
-                ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white rounded-tr-none'
-                : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-200 dark:border-white/5 backdrop-blur-md'
+                  ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white rounded-tr-none'
+                  : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-200 dark:border-white/5 backdrop-blur-md'
                 }`}>
                 {msg.text}
                 {msg.isLoading && (
@@ -433,8 +440,8 @@ const ChatWidget: React.FC = () => {
                 type="button"
                 onClick={toggleListening}
                 className={`absolute right-2 bottom-2 p-1.5 rounded-lg transition-all ${isListening
-                  ? 'text-red-500 bg-red-500/10 animate-pulse ring-2 ring-red-500/20'
-                  : 'text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400'
+                    ? 'text-red-500 bg-red-500/10 animate-pulse ring-2 ring-red-500/20'
+                    : 'text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400'
                   }`}
               >
                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}

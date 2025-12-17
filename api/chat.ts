@@ -1,82 +1,91 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export const config = {
-    runtime: 'edge',
-};
+// Allow Node.js runtime (default)
+// No edge runtime config
 
-export default async function handler(req: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+    // CORS Headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Handle preflight
     if (req.method === 'OPTIONS') {
-        return new Response(null, {
-            status: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
-            },
-        });
+        return res.status(200).end();
     }
 
+    // Only POST allowed
     if (req.method !== 'POST') {
-        return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
-            status: 405,
-            headers: { 'Content-Type': 'application/json' },
-        });
+        return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
     try {
-        const { message } = await req.json();
+        const { message } = req.body;
 
         if (!message || typeof message !== 'string') {
-            return new Response(JSON.stringify({ error: 'Invalid message format' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' },
-            });
+            return res.status(400).json({ error: 'Invalid message format. Expected { message: string }' });
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
-
         if (!apiKey) {
-            console.error('CRITICAL: GEMINI_API_KEY is missing in environment variables.');
-            return new Response(JSON.stringify({ error: 'Server misconfiguration' }), {
-                status: 500,
-                headers: { 'Content-Type': 'application/json' },
-            });
+            console.error('CRITICAL: GEMINI_API_KEY is missing');
+            return res.status(500).json({ error: 'Server misconfiguration: Missing API Key' });
         }
 
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        // Call Gemini REST API directly using fetch (Node.js 18+ supports fetch natively)
+        const apiVersion = 'v1beta';
+        const model = 'gemini-1.5-pro';
+        const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiKey}`;
 
         const systemPrompt = `
       You are Aura, an AI assistant for Arunava Saha's portfolio website.
-      Your tone is professional, enthusiastic, and concise.
-      You are NOT a Google model. You are Aura.
-      
-      About Arunava:
-      - Full Stack Developer & AI Engineer.
-      - Skills: React, Node.js, Python, Supabase, Gemini AI, Automation.
-      - Contact: sahap3264@gmail.com.
+      Professional, friendly, and concise.
+      Arunava is a Full Stack Developer & AI Engineer (React, Node, Python, data, automation).
+      Contact: sahap3264@gmail.com.
     `;
 
-        const result = await model.generateContent(`${systemPrompt}\n\nUser: ${message}\nAura:`);
-        const response = await result.response;
-        const text = response.text();
+        const payload = {
+            contents: [
+                {
+                    parts: [
+                        { text: systemPrompt },
+                        { text: `User: ${message}\nAura:` }
+                    ]
+                }
+            ]
+        };
 
-        return new Response(JSON.stringify({ reply: text }), {
-            status: 200,
+        const response = await fetch(url, {
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify(payload)
         });
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Gemini API Error:', response.status, errorText);
+            return res.status(response.status).json({ error: 'Gemini API Error', details: errorText });
+        }
+
+        const data = await response.json();
+
+        // Extract text from Gemini response structure
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!reply) {
+            console.error('Unexpected Gemini response format:', JSON.stringify(data));
+            return res.status(500).json({ error: 'Invalid response from AI model' });
+        }
+
+        return res.status(200).json({ reply });
+
     } catch (error: any) {
-        console.error('Gemini API Integration Error:', error);
-        return new Response(JSON.stringify({
-            error: 'Failed to process request',
+        console.error('Backend Request Error:', error);
+        return res.status(500).json({
+            error: 'Internal Server Error',
             details: error instanceof Error ? error.message : 'Unknown error'
-        }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
         });
     }
 }

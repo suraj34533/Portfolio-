@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, Sparkles, Mic, MicOff, Volume2, VolumeX, Square, MapPin } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { streamChatResponse } from '../services/geminiService';
 import { ChatMessage } from '../types';
 import { useSettings } from '../contexts/SettingsContext';
 
@@ -14,26 +13,26 @@ interface IWindow extends Window {
 const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { 
-      id: '1', 
-      role: 'model', 
+    {
+      id: '1',
+      role: 'model',
       text: "Hello! I'm Aura. I can guide you through Arunava's portfolio. Try saying 'Take me to projects' or 'Switch to light mode'.",
       timestamp: Date.now()
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  
+
   // Voice State
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechRate, setSpeechRate] = useState(1);
   const [volume, setVolume] = useState(1);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
-  
+
   // Navigation State
   const [showControls, setShowControls] = useState(true);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,7 +48,7 @@ const ChatWidget: React.FC = () => {
   useEffect(() => {
     const iWindow = window as unknown as IWindow;
     const SpeechRecognition = iWindow.SpeechRecognition || iWindow.webkitSpeechRecognition;
-    
+
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
@@ -91,16 +90,16 @@ const ChatWidget: React.FC = () => {
 
   const speak = (text: string) => {
     if (!voiceEnabled || !synthRef.current) return;
-    
+
     synthRef.current.cancel(); // Stop previous speech
 
     // Strip markdown chars for smoother speech
     const cleanText = text.replace(/[*#_`]/g, '');
-    
+
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = speechRate;
     utterance.volume = volume;
-    
+
     // Try to select a female/friendly voice
     const voices = synthRef.current.getVoices();
     const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha'));
@@ -132,49 +131,49 @@ const ChatWidget: React.FC = () => {
 
   const handleVoiceCommand = (text: string) => {
     const lowerText = text.toLowerCase();
-    
+
     // Theme Commands
     if (lowerText.includes('dark mode') || lowerText.includes('dark theme')) {
-        setTheme('dark');
-        submitMessage(text, "Switching to Dark Mode.");
-        return;
+      setTheme('dark');
+      submitMessage(text, "Switching to Dark Mode.");
+      return;
     }
     if (lowerText.includes('light mode') || lowerText.includes('light theme')) {
-        setTheme('light');
-        submitMessage(text, "Switching to Light Mode. It looks brilliant!");
-        return;
+      setTheme('light');
+      submitMessage(text, "Switching to Light Mode. It looks brilliant!");
+      return;
     }
 
     // Accessibility Commands
     if (lowerText.includes('reduce motion') || lowerText.includes('stop animation')) {
-        setReducedMotion(true);
-        submitMessage(text, "I've enabled reduced motion for better accessibility.");
-        return;
+      setReducedMotion(true);
+      submitMessage(text, "I've enabled reduced motion for better accessibility.");
+      return;
     }
     if (lowerText.includes('increase font') || lowerText.includes('bigger text')) {
-        setFontSize('large');
-        submitMessage(text, "Increasing text size for better readability.");
-        return;
+      setFontSize('large');
+      submitMessage(text, "Increasing text size for better readability.");
+      return;
     }
 
     // Navigation Commands
     const sections = [
-        { key: 'home', path: '/' },
-        { key: 'about', path: '/about' },
-        { key: 'project', path: '/projects' },
-        { key: 'skill', path: '/skills' },
-        { key: 'experience', path: '/experience' },
-        { key: 'contact', path: '/contact' }
+      { key: 'home', path: '/' },
+      { key: 'about', path: '/about' },
+      { key: 'project', path: '/projects' },
+      { key: 'skill', path: '/skills' },
+      { key: 'experience', path: '/experience' },
+      { key: 'contact', path: '/contact' }
     ];
 
     for (const section of sections) {
-        if (lowerText.includes(`go to ${section.key}`) || lowerText.includes(`scroll to ${section.key}`) || lowerText.includes(`show ${section.key}`)) {
-            navigate(section.path);
-            submitMessage(text, `Navigating to ${section.key.charAt(0).toUpperCase() + section.key.slice(1)} page.`);
-            return;
-        }
+      if (lowerText.includes(`go to ${section.key}`) || lowerText.includes(`scroll to ${section.key}`) || lowerText.includes(`show ${section.key}`)) {
+        navigate(section.path);
+        submitMessage(text, `Navigating to ${section.key.charAt(0).toUpperCase() + section.key.slice(1)} page.`);
+        return;
+      }
     }
-    
+
     // Tour Command
     if (lowerText.includes('start tour') || lowerText.includes('guide me')) {
       startTour();
@@ -196,7 +195,7 @@ const ChatWidget: React.FC = () => {
     ];
 
     setIsOpen(true);
-    
+
     // Helper for delay
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -206,12 +205,13 @@ const ChatWidget: React.FC = () => {
       const msg: ChatMessage = { id: Date.now().toString(), role: 'model', text: step.text, timestamp: Date.now() };
       setMessages(prev => [...prev, msg]);
       speak(step.text);
-      
+
       // Wait for speech duration approx (word count * avg time) + pause
       await wait(step.text.split(' ').length * 350 + 2000);
     }
   };
 
+  // Replaces frontend Gemini logic with backend Fetch logic
   const submitMessage = async (text: string, overrideResponse?: string) => {
     if (!text.trim()) return;
 
@@ -234,24 +234,45 @@ const ChatWidget: React.FC = () => {
       return;
     }
 
-    const history = messages.map(m => ({ role: m.role, text: m.text }));
     const aiMessageId = (Date.now() + 1).toString();
-    
-    setMessages(prev => [...prev, { id: aiMessageId, role: 'model', text: '', isLoading: true, timestamp: Date.now() }]);
 
-    let fullResponse = "";
-    
-    await streamChatResponse(history, userMessage.text, (chunk) => {
-      fullResponse += chunk;
-      setMessages(prev => prev.map(msg => 
-        msg.id === aiMessageId 
-          ? { ...msg, text: fullResponse, isLoading: false } 
-          : msg
-      ));
-    });
+    try {
+      // Add artificial delay for better UX and WebView stability
+      await new Promise(resolve => setTimeout(resolve, 600));
 
-    setIsTyping(false);
-    speak(fullResponse);
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch response");
+      }
+
+      const data = await response.json();
+      const reply = data.reply || "I'm having a bit of trouble connecting right now. Please try again.";
+
+      setMessages(prev => [...prev, {
+        id: aiMessageId,
+        role: 'model',
+        text: reply,
+        timestamp: Date.now()
+      }]);
+
+      setIsTyping(false);
+      speak(reply);
+
+    } catch (error) {
+      console.error("Chat Error:", error);
+      setMessages(prev => [...prev, {
+        id: aiMessageId,
+        role: 'model',
+        text: "I apologize, but I'm unable to connect to the server at the moment. Please check your connection.",
+        timestamp: Date.now()
+      }]);
+      setIsTyping(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -261,7 +282,7 @@ const ChatWidget: React.FC = () => {
   };
 
   const handleQuickAction = (action: string) => {
-    switch(action) {
+    switch (action) {
       case 'projects':
         navigate('/projects');
         submitMessage("Show me the projects", "Navigating to the Projects page.");
@@ -276,12 +297,11 @@ const ChatWidget: React.FC = () => {
   return (
     <div className="fixed bottom-6 right-6 z-[150] flex flex-col items-end font-sans">
       {/* Chat Window */}
-      <div 
-        className={`transition-all duration-300 ease-out transform origin-bottom-right ${
-          isOpen 
-            ? 'w-[90vw] md:w-[400px] h-[600px] opacity-100 scale-100' 
+      <div
+        className={`transition-all duration-300 ease-out transform origin-bottom-right ${isOpen
+            ? 'w-[90vw] md:w-[400px] h-[600px] opacity-100 scale-100'
             : 'w-0 h-0 opacity-0 scale-0 overflow-hidden'
-        } bg-white/95 dark:bg-navy-900/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl flex flex-col mb-4`}
+          } bg-white/95 dark:bg-navy-900/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl flex flex-col mb-4`}
       >
         {/* Header */}
         <div className="flex-none p-4 bg-gradient-to-r from-cyan-600/20 to-slate-100 dark:from-cyan-900/50 dark:to-navy-900 border-b border-slate-200 dark:border-white/10 flex justify-between items-center">
@@ -289,7 +309,7 @@ const ChatWidget: React.FC = () => {
             <div className="relative p-2 bg-cyan-500/20 rounded-full">
               <Bot className="text-cyan-600 dark:text-cyan-400" size={24} />
               {isSpeaking && (
-                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse border border-white dark:border-navy-900"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse border border-white dark:border-navy-900"></span>
               )}
             </div>
             <div>
@@ -304,14 +324,14 @@ const ChatWidget: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => setVoiceEnabled(!voiceEnabled)}
               className={`p-2 rounded-lg transition-colors ${voiceEnabled ? 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
               title={voiceEnabled ? "Mute Voice" : "Enable Voice"}
             >
               {voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
             </button>
-            <button 
+            <button
               onClick={() => setIsOpen(false)}
               className="p-2 text-slate-400 hover:text-navy-900 dark:hover:text-white transition-colors hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg cursor-pointer"
               aria-label="Close Chat"
@@ -323,26 +343,25 @@ const ChatWidget: React.FC = () => {
 
         {/* Quick Actions Bar */}
         <div className="flex-none px-4 py-2 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-navy-950/30 overflow-x-auto no-scrollbar flex gap-2">
-           <button onClick={() => startTour()} className="whitespace-nowrap px-3 py-1.5 text-xs font-medium bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/20 rounded-full hover:bg-gold-500/20 transition-colors">
-             Start Tour
-           </button>
-           <button onClick={() => handleQuickAction('projects')} className="whitespace-nowrap px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
-             View Projects
-           </button>
-           <button onClick={() => handleQuickAction('contact')} className="whitespace-nowrap px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
-             Contact
-           </button>
+          <button onClick={() => startTour()} className="whitespace-nowrap px-3 py-1.5 text-xs font-medium bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/20 rounded-full hover:bg-gold-500/20 transition-colors">
+            Start Tour
+          </button>
+          <button onClick={() => handleQuickAction('projects')} className="whitespace-nowrap px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
+            View Projects
+          </button>
+          <button onClick={() => handleQuickAction('contact')} className="whitespace-nowrap px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
+            Contact
+          </button>
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-              <div className={`max-w-[85%] rounded-2xl p-3.5 text-sm shadow-md ${
-                msg.role === 'user' 
-                  ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white rounded-tr-none' 
+              <div className={`max-w-[85%] rounded-2xl p-3.5 text-sm shadow-md ${msg.role === 'user'
+                  ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white rounded-tr-none'
                   : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-200 dark:border-white/5 backdrop-blur-md'
-              }`}>
+                }`}>
                 {msg.text}
                 {msg.isLoading && (
                   <div className="flex gap-1 mt-2">
@@ -353,7 +372,7 @@ const ChatWidget: React.FC = () => {
                 )}
               </div>
               <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 px-1">
-                {new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
           ))}
@@ -375,19 +394,19 @@ const ChatWidget: React.FC = () => {
                 <span className="text-[10px] text-slate-500 font-mono tracking-wider">VOICE READY</span>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2">
-               {isSpeaking && (
-                 <button onClick={stopSpeaking} className="p-1 text-red-400 hover:bg-red-500/10 rounded">
-                   <Square size={14} fill="currentColor" />
-                 </button>
-               )}
-               <button 
-                 onClick={() => setSpeechRate(r => r === 2 ? 1 : r + 0.5)} 
-                 className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/30 border border-cyan-500/20"
-               >
-                 {speechRate}x
-               </button>
+              {isSpeaking && (
+                <button onClick={stopSpeaking} className="p-1 text-red-400 hover:bg-red-500/10 rounded">
+                  <Square size={14} fill="currentColor" />
+                </button>
+              )}
+              <button
+                onClick={() => setSpeechRate(r => r === 2 ? 1 : r + 0.5)}
+                className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded bg-cyan-100 dark:bg-cyan-900/30 border border-cyan-500/20"
+              >
+                {speechRate}x
+              </button>
             </div>
           </div>
         )}
@@ -401,7 +420,7 @@ const ChatWidget: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if(e.key === 'Enter' && !e.shiftKey) {
+                  if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleSubmit(e);
                   }
@@ -410,21 +429,20 @@ const ChatWidget: React.FC = () => {
                 className="w-full bg-transparent text-navy-900 dark:text-white pl-4 pr-10 py-3 focus:outline-none text-sm resize-none max-h-24 min-h-[44px]"
                 rows={1}
               />
-              <button 
+              <button
                 type="button"
                 onClick={toggleListening}
-                className={`absolute right-2 bottom-2 p-1.5 rounded-lg transition-all ${
-                  isListening 
-                    ? 'text-red-500 bg-red-500/10 animate-pulse ring-2 ring-red-500/20' 
+                className={`absolute right-2 bottom-2 p-1.5 rounded-lg transition-all ${isListening
+                    ? 'text-red-500 bg-red-500/10 animate-pulse ring-2 ring-red-500/20'
                     : 'text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400'
-                }`}
+                  }`}
               >
                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
               </button>
             </div>
-            
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               disabled={!input.trim() || isTyping}
               className="p-3 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-xl text-white shadow-lg shadow-cyan-900/20 hover:shadow-cyan-500/30 hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100 disabled:shadow-none"
             >
@@ -436,16 +454,16 @@ const ChatWidget: React.FC = () => {
 
       {/* Toggle Button */}
       {!isOpen && (
-        <button 
+        <button
           onClick={() => setIsOpen(true)}
           className="group relative flex items-center justify-center p-4 rounded-full shadow-[0_0_30px_rgba(0,217,255,0.3)] bg-gradient-to-r from-cyan-600 to-blue-600 text-white transition-all duration-300 hover:scale-110 hover:shadow-[0_0_50px_rgba(0,217,255,0.5)] border border-cyan-400/30"
         >
           {/* Animated rings */}
           <span className="absolute inset-0 rounded-full border border-white/20 animate-[ping_2s_linear_infinite]"></span>
           <span className="absolute inset-0 rounded-full border border-cyan-400/40 animate-[ping_2s_linear_infinite_0.5s]"></span>
-          
+
           <MessageSquare size={28} className="relative z-10" />
-          
+
           <div className="absolute right-full mr-4 px-4 py-2 bg-white/90 dark:bg-navy-900/90 backdrop-blur text-sm text-cyan-600 dark:text-cyan-400 rounded-xl border border-slate-200 dark:border-white/10 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 pointer-events-none">
             Voice Assistant Online
           </div>

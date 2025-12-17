@@ -147,6 +147,13 @@ const Hero: React.FC = () => {
               >
                 <span className="block skew-x-[12deg] group-hover:skew-x-0 text-sm tracking-wider">CONTACT ME</span>
               </Link>
+              <a
+                href="/resume.pdf"
+                download="Arunava_Saha_Resume.pdf"
+                className="px-6 py-3 border border-purple-500 dark:border-purple-400 text-purple-600 dark:text-purple-400 font-bold rounded-none skew-x-[-12deg] hover:bg-purple-600 dark:hover:bg-purple-400 hover:text-white dark:hover:text-black transition-all duration-300 cursor-pointer group"
+              >
+                <span className="block skew-x-[12deg] group-hover:skew-x-0 text-sm tracking-wider">DOWNLOAD CV</span>
+              </a>
             </div>
           </div>
         </div>

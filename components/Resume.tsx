@@ -38,8 +38,8 @@ const Resume: React.FC = () => {
 
   const projects = [
     {
-      title: "IRONBEAST - Fitness Platform",
-      desc: "Full-featured fitness website for athletes & powerlifters. Delivered all-in-one ecosystem for training planning, diet execution, and user engagement.",
+      title: " AIONUS : AI Powered Real Estate Platform",
+      desc: "Developed and deployed a fully responsive premium real estate platform with modern UI/UX, dynamic property listings, admin management dashboard, AI advisor chatbot, and integrated lead capture system.",
       tech: "React, Web Dev, UX/UI",
       color: "border-red-500/30"
     },
@@ -334,8 +334,8 @@ const Resume: React.FC = () => {
                 <button
                   onClick={() => setPdfDarkMode(!pdfDarkMode)}
                   className={`p-2 rounded-lg border transition-all duration-300 ${pdfDarkMode
-                      ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-                      : 'bg-white/50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-cyan-500'
+                    ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
+                    : 'bg-white/50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-cyan-500'
                     }`}
                   title="Toggle Contrast"
                 >

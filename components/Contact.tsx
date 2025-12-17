@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import supabase from '../services/supabaseClient';
-import { Mail, Phone, MapPin, Github, Linkedin, Instagram, MessageCircle, ArrowLeft, Home, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { getSupabase } from '../services/supabaseClient';
+import { Mail, Phone, MapPin, Github, Linkedin, Instagram, MessageCircle, ArrowLeft, Home, CheckCircle, AlertCircle, Loader2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Contact: React.FC = () => {
   const navigate = useNavigate();
+  const [isWhatsApp, setIsWhatsApp] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -23,6 +24,15 @@ const Contact: React.FC = () => {
   });
 
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
+
+  // Detect WhatsApp In-App Browser
+  useEffect(() => {
+    const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+    // Simple detection for WhatsApp
+    if (/WhatsApp/i.test(userAgent)) {
+      setIsWhatsApp(true);
+    }
+  }, []);
 
   // Validation Logic
   const validateForm = () => {
@@ -67,6 +77,10 @@ const Contact: React.FC = () => {
     }
   };
 
+  /**
+   * Defensive Submit Handler
+   * fixes: "Server Error" due to race conditions or blocked requests in WebViews
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -74,6 +88,12 @@ const Contact: React.FC = () => {
       setFormStatus('submitting');
 
       try {
+        // 1. Artificial Delay: Helps low-end devices/WebViews settle DOM events before network request
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        // 2. Get Defensive Client
+        const supabase = getSupabase();
+
         const { error } = await supabase
           .from('contact_messages')
           .insert([
@@ -96,9 +116,7 @@ const Contact: React.FC = () => {
 
       } catch (err) {
         console.error('Error submitting form:', err);
-        // We could handle error state specifically here, 
-        // for now we'll just not show success and perhaps log/alert
-        alert('Failed to send message. Please try again.');
+        alert('Failed to send message. Please try again or open in Chrome.');
         setFormStatus('idle');
       }
     }
@@ -191,7 +209,21 @@ const Contact: React.FC = () => {
           </div>
 
           {/* Form Side */}
-          <div className="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden">
+          <div className="glass-panel p-8 md:p-12 rounded-3xl relative overflow-hidden flex flex-col">
+
+            {/* WhatsApp Warning Banner */}
+            {isWhatsApp && (
+              <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-start gap-3 animate-[fadeIn_0.5s_ease-out]">
+                <AlertCircle className="text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" size={20} />
+                <div className="text-sm">
+                  <p className="font-bold text-yellow-700 dark:text-yellow-500">Browser Warning</p>
+                  <p className="text-slate-600 dark:text-slate-400 mt-1">
+                    WhatsApp's built-in browser may block this form. For the best experience, please open this page in Chrome or Safari.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {formStatus === 'success' && (
               <div className="absolute inset-0 z-20 bg-white/90 dark:bg-navy-900/90 backdrop-blur-sm flex flex-col items-center justify-center animate-[fadeIn_0.5s_ease-out]">
                 <div className="p-4 bg-green-500/10 rounded-full mb-4">
@@ -212,8 +244,8 @@ const Contact: React.FC = () => {
                     value={formData.name}
                     onChange={handleChange}
                     className={`w-full bg-white/50 dark:bg-navy-950/50 border rounded-lg p-3 text-navy-900 dark:text-white focus:outline-none transition-colors ${errors.name
-                        ? 'border-red-500 focus:border-red-500'
-                        : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
                       }`}
                   />
                   {errors.name && (
@@ -230,8 +262,8 @@ const Contact: React.FC = () => {
                     value={formData.email}
                     onChange={handleChange}
                     className={`w-full bg-white/50 dark:bg-navy-950/50 border rounded-lg p-3 text-navy-900 dark:text-white focus:outline-none transition-colors ${errors.email
-                        ? 'border-red-500 focus:border-red-500'
-                        : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
                       }`}
                   />
                   {errors.email && (
@@ -250,8 +282,8 @@ const Contact: React.FC = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   className={`w-full bg-white/50 dark:bg-navy-950/50 border rounded-lg p-3 text-navy-900 dark:text-white focus:outline-none transition-colors ${errors.subject
-                      ? 'border-red-500 focus:border-red-500'
-                      : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
+                    ? 'border-red-500 focus:border-red-500'
+                    : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
                     }`}
                 />
                 {errors.subject && (
@@ -269,8 +301,8 @@ const Contact: React.FC = () => {
                   value={formData.message}
                   onChange={handleChange}
                   className={`w-full bg-white/50 dark:bg-navy-950/50 border rounded-lg p-3 text-navy-900 dark:text-white focus:outline-none transition-colors ${errors.message
-                      ? 'border-red-500 focus:border-red-500'
-                      : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
+                    ? 'border-red-500 focus:border-red-500'
+                    : 'border-slate-200 dark:border-white/10 focus:border-cyan-400'
                     }`}
                 ></textarea>
                 {errors.message && (

@@ -1,160 +1,173 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Arunava Saha | AI Developer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-      // Safe polyfill for process to prevent "ReferenceError: process is not defined"
-      window.process = window.process || { env: {} };
-    </script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Outfit', 'sans-serif'],
-              mono: ['Space Grotesk', 'monospace'],
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arunava Saha | AI Developer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script>
+    // Safe polyfill for process to prevent "ReferenceError: process is not defined"
+    window.process = window.process || { env: {} };
+  </script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['Space Grotesk', 'monospace'],
+          },
+          colors: {
+            navy: {
+              900: '#0a0e27',
+              800: '#111835',
+              950: '#05081c',
             },
-            colors: {
-              navy: {
-                900: '#0a0e27',
-                800: '#111835',
-                950: '#05081c',
-              },
-              gold: {
-                400: '#ffd700',
-                500: '#e6c200',
-                600: '#d4af37', // Darker gold for light mode text
-              },
-              cyan: {
-                400: '#00d9ff',
-                500: '#00b8d4',
-                600: '#008ba3', // Darker cyan for light mode text
-              },
-              cream: {
-                50: '#f8f9fa',
-                100: '#f1f5f9',
-              }
+            gold: {
+              400: '#ffd700',
+              500: '#e6c200',
+              600: '#d4af37', // Darker gold for light mode text
             },
-            animation: {
-              'float': 'float 6s ease-in-out infinite',
-              'pulse-glow': 'pulse-glow 3s infinite',
+            cyan: {
+              400: '#00d9ff',
+              500: '#00b8d4',
+              600: '#008ba3', // Darker cyan for light mode text
             },
-            keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-20px)' },
-              },
-              'pulse-glow': {
-                '0%, 100%': { opacity: 1, boxShadow: '0 0 20px rgba(0, 217, 255, 0.5)' },
-                '50%': { opacity: 0.7, boxShadow: '0 0 40px rgba(0, 217, 255, 0.2)' },
-              }
+            cream: {
+              50: '#f8f9fa',
+              100: '#f1f5f9',
+            }
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-glow': 'pulse-glow 3s infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' },
+            },
+            'pulse-glow': {
+              '0%, 100%': { opacity: 1, boxShadow: '0 0 20px rgba(0, 217, 255, 0.5)' },
+              '50%': { opacity: 0.7, boxShadow: '0 0 40px rgba(0, 217, 255, 0.2)' },
             }
           }
         }
       }
-    </script>
-    <style>
-      body {
-        /* Default to dark mode colors, overridden by classes */
-        background-color: #05081c; 
-        color: #e2e8f0;
-        overflow-x: hidden;
-        transition: background-color 0.3s ease, color 0.3s ease;
-      }
-      
-      html:not(.dark) body {
-        background-color: #f8f9fa;
-        color: #1a1f3a;
-      }
+    }
+  </script>
+  <style>
+    body {
+      /* Default to dark mode colors, overridden by classes */
+      background-color: #05081c;
+      color: #e2e8f0;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
-      .text-gradient-metallic {
-        background: linear-gradient(to bottom, #ffffff 0%, #e2e8f0 40%, #94a3b8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0px 10px 20px rgba(0,0,0,0.5);
-      }
-      
-      html:not(.dark) .text-gradient-metallic {
-        background: linear-gradient(to bottom, #1a1f3a 0%, #475569 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0px 5px 15px rgba(0,0,0,0.1);
-      }
+    html:not(.dark) body {
+      background-color: #f8f9fa;
+      color: #1a1f3a;
+    }
 
-      .text-gradient-gold {
-        background: linear-gradient(135deg, #ffd700 0%, #fdb931 50%, #d4af37 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
+    .text-gradient-metallic {
+      background: linear-gradient(to bottom, #ffffff 0%, #e2e8f0 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+    }
 
-      .card-3d {
-        transform-style: preserve-3d;
-        transition: transform 0.3s ease-out;
-      }
+    html:not(.dark) .text-gradient-metallic {
+      background: linear-gradient(to bottom, #1a1f3a 0%, #475569 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    }
 
-      .glass-panel {
-        backdrop-filter: blur(10px);
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-      }
-      
-      .dark .glass-panel {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-      
-      html:not(.dark) .glass-panel {
-        background: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-      }
+    .text-gradient-gold {
+      background: linear-gradient(135deg, #ffd700 0%, #fdb931 50%, #d4af37 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #1e293b;
-        border-radius: 4px;
-      }
-      html:not(.dark) ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #00d9ff;
-      }
+    .card-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease-out;
+    }
 
-      /* Page Transitions */
-      .page-enter {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      .page-enter-active {
-        opacity: 1;
-        transform: translateY(0);
-        transition: opacity 500ms ease-out, transform 500ms ease-out;
-      }
-      .page-exit {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      .page-exit-active {
-        opacity: 0;
-        transform: translateY(-20px);
-        transition: opacity 300ms ease-in, transform 300ms ease-in;
-      }
-    </style>
+    .glass-panel {
+      backdrop-filter: blur(10px);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
 
-<link rel="stylesheet" href="/index.css">
+    .dark .glass-panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    html:not(.dark) .glass-panel {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+
+    html:not(.dark) ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00d9ff;
+    }
+
+    /* Page Transitions */
+    .page-enter {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .page-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 500ms ease-out, transform 500ms ease-out;
+    }
+
+    .page-exit {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .page-exit-active {
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 300ms ease-in, transform 300ms ease-in;
+    }
+  </style>
+
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <div id="root"></div>
+
+<body>
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>

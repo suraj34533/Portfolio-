@@ -272,11 +272,10 @@ const ChatWidget: React.FC = () => {
 
     } catch (error) {
       console.error("Chat Request Failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       setMessages(prev => [...prev, {
         id: aiMessageId,
         role: 'model',
-        text: `Error: ${errorMessage}. Please check your connection or API Key.`,
+        text: "I apologize, but I'm unable to connect to the server at the moment. Please check your connection.",
         timestamp: Date.now()
       }]);
       setIsTyping(false);

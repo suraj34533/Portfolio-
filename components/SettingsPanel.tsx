@@ -3,7 +3,7 @@ import { X, Moon, Sun, Monitor, Type, Volume2, Eye, Shield, Trash2, Globe, Check
 import { useSettings } from '../contexts/SettingsContext';
 
 const SettingsPanel: React.FC = () => {
-  const { 
+  const {
     theme, toggleTheme, setTheme,
     fontSize, setFontSize,
     reducedMotion, setReducedMotion,
@@ -16,20 +16,20 @@ const SettingsPanel: React.FC = () => {
   return (
     <>
       {/* Backdrop - Z-index 190 to cover Navbar (100) and Chat (150) */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[190] transition-opacity"
         onClick={() => setIsSettingsOpen(false)}
       />
 
       {/* Panel - Z-index 200 */}
       <div className={`fixed top-0 right-0 h-full w-full md:w-[400px] bg-white dark:bg-navy-900 border-l border-slate-200 dark:border-white/10 shadow-2xl z-[200] transform transition-transform duration-300 ease-in-out ${isSettingsOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        
+
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-white/10">
           <h2 className="text-xl font-bold text-navy-900 dark:text-white flex items-center gap-2">
             Settings
           </h2>
-          <button 
+          <button
             onClick={() => setIsSettingsOpen(false)}
             className="p-3 text-slate-500 hover:text-navy-900 dark:text-slate-400 dark:hover:text-white transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 cursor-pointer"
             aria-label="Close Settings"
@@ -40,38 +40,16 @@ const SettingsPanel: React.FC = () => {
 
         {/* Content */}
         <div className="p-6 overflow-y-auto h-[calc(100%-80px)] space-y-8">
-          
+
           {/* Appearance Section */}
           <section>
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Monitor size={14} /> Appearance
             </h3>
-            
-            <div className="bg-slate-50 dark:bg-navy-950/50 rounded-xl p-1 border border-slate-200 dark:border-white/10 flex mb-4">
-              <button
-                onClick={() => setTheme('light')}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  theme === 'light' 
-                    ? 'bg-white text-navy-900 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
-                }`}
-              >
-                <Sun size={16} /> Light
-              </button>
-              <button
-                onClick={() => setTheme('dark')}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  theme === 'dark' 
-                    ? 'bg-navy-800 text-white shadow-sm ring-1 ring-white/10' 
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
-                }`}
-              >
-                <Moon size={16} /> Dark
-              </button>
+
+            <div className="bg-slate-50 dark:bg-navy-950/50 rounded-xl p-4 border border-slate-200 dark:border-white/10 text-sm text-slate-500 dark:text-slate-400 text-center">
+              Dark Mode is permanently enabled for the best experience.
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 px-1">
-              Choose "Light" for a clean, cream-based luxury look, or "Dark" for the deep metallic aesthetic.
-            </p>
           </section>
 
           {/* Typography Section */}
@@ -79,7 +57,7 @@ const SettingsPanel: React.FC = () => {
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Type size={14} /> Typography
             </h3>
-            
+
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors cursor-pointer" onClick={() => setFontSize('small')}>
                 <span className="text-sm text-navy-900 dark:text-slate-200">Small</span>
@@ -101,7 +79,7 @@ const SettingsPanel: React.FC = () => {
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Eye size={14} /> Accessibility
             </h3>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -137,12 +115,12 @@ const SettingsPanel: React.FC = () => {
             </div>
           </section>
 
-           {/* Data Section */}
-           <section>
+          {/* Data Section */}
+          <section>
             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Shield size={14} /> Data & Privacy
             </h3>
-            
+
             <button className="w-full flex items-center justify-between p-4 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-red-50 dark:hover:bg-red-900/10 hover:border-red-200 dark:hover:border-red-900/30 group transition-all">
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400">Clear Chat History</span>
               <Trash2 size={18} className="text-slate-400 group-hover:text-red-500 transition-colors" />

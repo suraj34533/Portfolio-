@@ -138,11 +138,13 @@ const ChatWidget: React.FC = () => {
       submitMessage(text, "Switching to Dark Mode.");
       return;
     }
-    if (lowerText.includes('light mode') || lowerText.includes('light theme')) {
-      setTheme('light');
-      submitMessage(text, "Switching to Light Mode. It looks brilliant!");
+    // Theme Commands (Dark Mode enforced)
+    if (lowerText.includes('dark mode') || lowerText.includes('dark theme')) {
+      setTheme('dark');
+      submitMessage(text, "Dark mode is already active.");
       return;
     }
+    // Light mode removed as requested
 
     // Accessibility Commands
     if (lowerText.includes('reduce motion') || lowerText.includes('stop animation')) {
@@ -260,15 +262,26 @@ const ChatWidget: React.FC = () => {
         throw new Error('Invalid response format: Missing reply field');
       }
 
+      // Parse Navigation Command
+      let botReply = data.reply;
+      const navMatch = botReply.match(/\[\[NAVIGATE: (.*?)\]\]/);
+
+      if (navMatch) {
+        const route = navMatch[1];
+        navigate(route);
+        // Remove the tag from the displayed message
+        botReply = botReply.replace(navMatch[0], '').trim();
+      }
+
       setMessages(prev => [...prev, {
         id: aiMessageId,
         role: 'model',
-        text: data.reply,
+        text: botReply,
         timestamp: Date.now()
       }]);
 
       setIsTyping(false);
-      speak(data.reply);
+      speak(botReply);
 
     } catch (error) {
       console.error("Chat Request Failed:", error);

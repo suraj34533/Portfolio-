@@ -11,17 +11,17 @@
   "dependencies": {
     "@google/genai": "^1.30.0",
     "@google/generative-ai": "^0.24.1",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.4.2",
+    "@react-three/drei": "^9.102.6",
+    "@react-three/fiber": "^8.16.8",
     "@supabase/supabase-js": "^2.87.3",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "framer-motion": "^12.23.25",
+    "framer-motion": "^11.0.8",
     "lucide-react": "^0.555.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "6.22.3",
-    "three": "^0.181.2"
+    "three": "^0.162.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

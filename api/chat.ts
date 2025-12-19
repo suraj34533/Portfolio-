@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import fetch from 'node-fetch';
 
-const MODELS = ['gemini-1.5-flash', 'gemini-pro'];
+const MODELS = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Origin', '*');

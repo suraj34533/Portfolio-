@@ -16,7 +16,7 @@ const ChatWidget: React.FC = () => {
     {
       id: '1',
       role: 'model',
-      text: "Hello! I'm Aura. I can guide you through Arunava's portfolio. Try saying 'Take me to projects' or 'Switch to light mode'.",
+      text: "Hello! I'm Aura. I can guide you through Arunava's portfolio. Try saying 'Take me to projects' or 'Show me contact'.",
       timestamp: Date.now()
     }
   ]);
@@ -445,7 +445,7 @@ const ChatWidget: React.FC = () => {
                     handleSubmit(e);
                   }
                 }}
-                placeholder={isListening ? "Listening..." : "Ask Aura or say 'Switch to light mode'..."}
+                placeholder={isListening ? "Listening..." : "Ask Aura or say 'Show me projects'..."}
                 className="w-full bg-transparent text-navy-900 dark:text-white pl-4 pr-10 py-3 focus:outline-none text-sm resize-none max-h-24 min-h-[44px]"
                 rows={1}
               />
